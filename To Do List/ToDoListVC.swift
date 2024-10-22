@@ -13,7 +13,7 @@ class ToDoListVC: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        shoppingList = UserDefaults.standard.array(forKey: "shoppingList") as? [String] ?? []
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -47,6 +47,7 @@ class ToDoListVC: UITableViewController {
             guard let text = alert.textFields?[0].text else { return }
             if !text.isEmpty {
                 self.shoppingList.append(text.capitalized)
+                UserDefaults.standard.set(self.shoppingList, forKey: "shoppingList")
                 self.tableView.reloadData()
             }
         }
