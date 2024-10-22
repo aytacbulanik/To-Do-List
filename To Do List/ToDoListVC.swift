@@ -9,7 +9,7 @@ import UIKit
 
 class ToDoListVC: UITableViewController {
     
-    var shoppingList: [String] = ["Egg","Milk","Bread","Cheese","Chocolate","Water","Coffee","Tea","Juice","Apple","Banana","Orange","Pear","Grapefruit","Strawberry","Kiwi","Pineapple","Mango","Lemon","Lime","Papaya"]
+    var shoppingList: [String] = ["Egg","Milk","Bread","Cheese","Chocolate","Water","Coffee","Tea","Papaya"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,10 +33,27 @@ class ToDoListVC: UITableViewController {
         } else {
             tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
-        
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
+    
+    @IBAction func newTodoPressed(_ sender: UIBarButtonItem) {
+        
+        let alert = UIAlertController(title: "New ToDo", message: "", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "Enter new item"
+        }
+        let okButton = UIAlertAction(title: "Add Item", style: .default) { action in
+            guard let text = alert.textFields?[0].text else { return }
+            if !text.isEmpty {
+                self.shoppingList.append(text.capitalized)
+                self.tableView.reloadData()
+            }
+        }
+        alert.addAction(okButton)
+        present(alert, animated: true, completion: nil)
+    }
+    
 
 }
 
