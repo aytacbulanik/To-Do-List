@@ -9,5 +9,5 @@ import Foundation
 
 class Item {
     var title: String = ""
-    var doneChoose : Bool = false
+    var done : Bool = false
 }

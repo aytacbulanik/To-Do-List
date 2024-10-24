@@ -23,16 +23,17 @@ class ToDoListVC: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
         cell.textLabel?.text = shoppingList[indexPath.row].title
+        
+        let item = shoppingList[indexPath.row]
+        cell.accessoryType =  item.done ? .checkmark : .none
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        shoppingList[indexPath.row].done = !shoppingList[indexPath.row].done
+       
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
