@@ -10,10 +10,16 @@ import UIKit
 class ToDoListVC: UITableViewController {
     
     var shoppingList: [Item] = []
+    let documentPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //shoppingList = UserDefaults.standard.array(forKey: "shoppingList") as? [Item] ?? [Item]()
+        
+        
+        print(documentPath)
+        if let itemArray =  UserDefaults.standard.array(forKey: "shoppingList") as? [Item] {
+            shoppingList = itemArray
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -50,12 +56,34 @@ class ToDoListVC: UITableViewController {
                 let newItem = Item()
                 newItem.title = text.capitalized
                 self.shoppingList.append(newItem)
-                //UserDefaults.standard.set(self.shoppingList, forKey: "shoppingList")
-                self.tableView.reloadData()
+                self.saveItem()
             }
         }
         alert.addAction(okButton)
         present(alert, animated: true, completion: nil)
+    }
+    
+    func saveItem() {
+        let encoder = PropertyListEncoder()
+        do {
+           let data =  try encoder.encode(self.shoppingList)
+            try data.write(to: self.documentPath!)
+        } catch {
+            print(error.localizedDescription)
+        }
+        
+        self.tableView.reloadData()
+    }
+    
+    func loadItems() {
+        if let data = try? Data(contentsOf: self.documentPath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                shoppingList = try decoder.decode([Item].self, from: data)
+            }catch {
+                print(error.localizedDescription)
+            }
+        }
     }
     
 
