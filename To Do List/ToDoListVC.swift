@@ -9,11 +9,11 @@ import UIKit
 
 class ToDoListVC: UITableViewController {
     
-    var shoppingList: [String] = ["Egg","Milk","Bread","Cheese","Chocolate","Water","Coffee","Tea","Papaya"]
+    var shoppingList: [Item] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        shoppingList = UserDefaults.standard.array(forKey: "shoppingList") as? [String] ?? []
+        //shoppingList = UserDefaults.standard.array(forKey: "shoppingList") as? [Item] ?? [Item]()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -22,7 +22,7 @@ class ToDoListVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
-        cell.textLabel?.text = shoppingList[indexPath.row]
+        cell.textLabel?.text = shoppingList[indexPath.row].title
         return cell
     }
     
@@ -46,8 +46,10 @@ class ToDoListVC: UITableViewController {
         let okButton = UIAlertAction(title: "Add Item", style: .default) { action in
             guard let text = alert.textFields?[0].text else { return }
             if !text.isEmpty {
-                self.shoppingList.append(text.capitalized)
-                UserDefaults.standard.set(self.shoppingList, forKey: "shoppingList")
+                let newItem = Item()
+                newItem.title = text.capitalized
+                self.shoppingList.append(newItem)
+                //UserDefaults.standard.set(self.shoppingList, forKey: "shoppingList")
                 self.tableView.reloadData()
             }
         }
