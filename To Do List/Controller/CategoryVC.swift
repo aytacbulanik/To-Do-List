@@ -12,12 +12,12 @@ class CategoryVC: UITableViewController {
     
     let realm = try! Realm()
     
-    var categories = [Category]()
+    var categories : Results<Category>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-       
+        loadCategories()
     }
 
     // MARK: - Table view data source
@@ -25,13 +25,25 @@ class CategoryVC: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return categories.count
+        return categories?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell", for: indexPath)
-        cell.textLabel?.text = categories[indexPath.row].name
+        cell.textLabel?.text = categories?[indexPath.row].name ?? "No categories added yet."
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItems", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ToDoListVC
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categories?[indexPath.row]
+        }
+        
     }
 
     @IBAction func categoryButtonPressed(_ sender: UIBarButtonItem) {
@@ -45,10 +57,8 @@ class CategoryVC: UITableViewController {
             if let textFieldText = textField.text {
                 let category = Category()
                 category.name = textFieldText
-                self.categories.append(category)
                 self.saveCategories(category: category)
             }
-            self.tableView.reloadData()
         }
         alert.addAction(addButton)
         present(alert, animated: true)
@@ -63,10 +73,12 @@ class CategoryVC: UITableViewController {
         } catch {
             print(error.localizedDescription)
         }
+        tableView.reloadData()
     }
     
     func loadCategories() {
-        
+        categories = realm.objects(Category.self)
+        tableView.reloadData()
     }
 
 }

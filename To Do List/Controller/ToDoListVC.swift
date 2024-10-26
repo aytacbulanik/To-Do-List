@@ -6,10 +6,18 @@
 //
 
 import UIKit
+import RealmSwift
 
 class ToDoListVC: UITableViewController {
     
-    var shoppingList: [Item] = []
+    var itemArray : Results<Item>?
+    let realm = try! Realm()
+    
+    var selectedCategory: Category? {
+        didSet {
+            loadItem()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,22 +27,27 @@ class ToDoListVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return shoppingList.count
+        return itemArray?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
-        cell.textLabel?.text = shoppingList[indexPath.row].title
         
-        let item = shoppingList[indexPath.row]
-        cell.accessoryType =  item.done ? .checkmark : .none
+        
+        if let item = itemArray?[indexPath.row] {
+            cell.accessoryType =  item.done ? .checkmark : .none
+            cell.textLabel?.text = item.title
+        } else {
+            cell.textLabel?.text = "No items added yet"
+        }
+        
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        shoppingList[indexPath.row].done = !shoppingList[indexPath.row].done
-        saveItem()
+        //itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        // saveItem()
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -49,11 +62,19 @@ class ToDoListVC: UITableViewController {
         let okButton = UIAlertAction(title: "Add Item", style: .default) { action in
             guard let text = alert.textFields?[0].text else { return }
             if !text.isEmpty {
-                let newItem = Item()
-                newItem.title = text.capitalized
-                self.shoppingList.append(newItem)
-                self.saveItem()
+                if let currentCategory = self.selectedCategory {
+                    do {
+                        try self.realm.write {
+                            let newItem = Item()
+                            newItem.title = text.capitalized
+                            currentCategory.items.append(newItem)
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
             }
+            self.tableView.reloadData()
         }
         alert.addAction(okButton)
         present(alert, animated: true, completion: nil)
@@ -61,6 +82,12 @@ class ToDoListVC: UITableViewController {
     
     func saveItem() {
        
+    }
+    
+    func loadItem() {
+        itemArray = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+        
+        tableView.reloadData()
     }
     
     
