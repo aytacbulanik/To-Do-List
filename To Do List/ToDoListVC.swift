@@ -16,10 +16,7 @@ class ToDoListVC: UITableViewController {
         super.viewDidLoad()
         
         
-        print(documentPath)
-        if let itemArray =  UserDefaults.standard.array(forKey: "shoppingList") as? [Item] {
-            shoppingList = itemArray
-        }
+        loadItems()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -38,7 +35,7 @@ class ToDoListVC: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         shoppingList[indexPath.row].done = !shoppingList[indexPath.row].done
-       
+        saveItem()
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
