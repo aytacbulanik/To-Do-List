@@ -22,8 +22,6 @@ class ToDoListVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-       
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -45,12 +43,21 @@ class ToDoListVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let item = itemArray?[indexPath.row] {
+            do {
+                try realm.write {
+                    item.done = !item.done
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
         
-        //itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-        // saveItem()
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    
 
     
     @IBAction func newTodoPressed(_ sender: UIBarButtonItem) {
