@@ -10,6 +10,7 @@ import RealmSwift
 
 class ToDoListVC: UITableViewController {
     
+    @IBOutlet weak var searchBar: UISearchBar!
     var itemArray : Results<Item>?
     let realm = try! Realm()
     
@@ -21,6 +22,7 @@ class ToDoListVC: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        searchBar.delegate = self
         
     }
     
@@ -97,8 +99,26 @@ class ToDoListVC: UITableViewController {
         tableView.reloadData()
     }
     
-    
-    
+}
 
+extension ToDoListVC : UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        itemArray = itemArray?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "title", ascending: true)
+        
+        tableView.reloadData()
+    }
+    
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            loadItem()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+        
+    }
 }
 
