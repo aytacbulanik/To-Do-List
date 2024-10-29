@@ -76,6 +76,7 @@ class ToDoListVC: UITableViewController {
                         try self.realm.write {
                             let newItem = Item()
                             newItem.title = text.capitalized
+                            newItem.dateCraeted = Date()
                             currentCategory.items.append(newItem)
                         }
                     } catch {
@@ -89,13 +90,8 @@ class ToDoListVC: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    func saveItem() {
-       
-    }
-    
     func loadItem() {
-        itemArray = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
-        
+        itemArray = selectedCategory?.items.sorted(byKeyPath: "dateCraeted", ascending: false)
         tableView.reloadData()
     }
     
@@ -104,7 +100,7 @@ class ToDoListVC: UITableViewController {
 extension ToDoListVC : UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        itemArray = itemArray?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "title", ascending: true)
+        itemArray = itemArray?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCraeted", ascending: true)
         
         tableView.reloadData()
     }
