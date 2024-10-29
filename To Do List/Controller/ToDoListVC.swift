@@ -27,6 +27,16 @@ class ToDoListVC: SwipeTableViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        guard let currentCategory = selectedCategory else { return }
+        guard let navBar = navigationController?.navigationBar else { fatalError("There is a problem here") }
+        navBar.backgroundColor = UIColor(hexString: currentCategory.cellColor)
+        title = currentCategory.name.uppercased()
+        searchBar.barTintColor = UIColor(hexString: currentCategory.cellColor)
+        navBar.largeTitleTextAttributes = [.foregroundColor: ContrastColorOf(UIColor(hexString: currentCategory.cellColor)!, returnFlat: true)]
+       
+    }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemArray?.count ?? 1
     }

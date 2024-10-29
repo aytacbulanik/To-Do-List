@@ -35,6 +35,7 @@ class CategoryVC: SwipeTableViewController {
         
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories"
+        cell.textLabel?.textColor = .white
         if let currentCell = categories?[indexPath.row] {
             cell.contentView.backgroundColor = UIColor(hexString: currentCell.cellColor)
         }
