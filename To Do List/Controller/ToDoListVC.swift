@@ -8,7 +8,7 @@
 import UIKit
 import RealmSwift
 
-class ToDoListVC: UITableViewController {
+class ToDoListVC: SwipeTableViewController {
     
     @IBOutlet weak var searchBar: UISearchBar!
     var itemArray : Results<Item>?
@@ -31,8 +31,7 @@ class ToDoListVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
-        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = itemArray?[indexPath.row] {
             cell.accessoryType =  item.done ? .checkmark : .none
@@ -57,6 +56,19 @@ class ToDoListVC: UITableViewController {
         
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let deletedItem = itemArray?[indexPath.row] {
+            do {
+                try realm.write {
+                    realm.delete(deletedItem)
+                }
+            }catch {
+                print(error.localizedDescription)
+            }
+            tableView.reloadData()
+        }
     }
     
     
